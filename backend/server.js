@@ -141,7 +141,7 @@ async function createSession(userId, token) {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
   
   await query(
-    'INSERT INTO user_sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)',
+    'INSERT INTO user_sessions (id, user_id, token_hash, expires_at) VALUES ($1, $2, $3, $4)',
     [sessionId, userId, tokenHash, expiresAt]
   );
   

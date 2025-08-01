@@ -1,8 +1,10 @@
 [build]
-command = "npm install"
+builder = "NIXPACKS"
 
 [deploy]
-startCommand = "npm run server"
+startCommand = "node server-production.js"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
 
 [variables]
-PORT = "3002"
+NODE_ENV = "production"
