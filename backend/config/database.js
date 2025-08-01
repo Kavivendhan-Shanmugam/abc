@@ -4,7 +4,11 @@ const { Pool } = pkg;
 function getDatabaseConfig() {
   const postgresUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
   
+  console.log('Database URL from env:', postgresUrl ? 'Found' : 'Not found');
+  console.log('All environment variables:', Object.keys(process.env).filter(key => key.includes('DATABASE')));
+  
   if (postgresUrl) {
+    console.log('Using PostgreSQL connection string');
     return {
       connectionString: postgresUrl,
       ssl: {
@@ -12,9 +16,12 @@ function getDatabaseConfig() {
       },
       max: 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 10000,
     };
   }
+  
+  console.log('Falling back to localhost configuration (this should not happen!)');
+  console.log('DATABASE_URL env var:', process.env.DATABASE_URL);
   
   return {
     host: process.env.DB_HOST || 'localhost',

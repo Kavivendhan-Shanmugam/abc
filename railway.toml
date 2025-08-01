@@ -1,0 +1,8 @@
+[build]
+command = "npm install"
+
+[deploy]
+startCommand = "npm run server"
+
+[variables]
+PORT = "3002"
