@@ -1,5 +1,4 @@
 import express from 'express';
-import mysql from 'mysql2/promise';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -10,7 +9,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { dbConfig, jwtSecret } from './config/database.js';
+import { pool, query, jwtSecret } from './config/database.js';
 
 // ES module path resolution
 const __filename = fileURLToPath(import.meta.url);
@@ -129,14 +128,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const port = 3002;
 
-// Create a connection pool
-const pool = mysql.createPool(dbConfig);
-
-// Utility function to execute queries
-async function query(sql, params) {
-  const [results] = await pool.execute(sql, params);
-  return results;
-}
+// PostgreSQL query helper (already imported from config)
 
 // Session management functions
 async function createSession(userId, token) {
@@ -175,7 +167,7 @@ async function cleanupExpiredSessions() {
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'MySQL Backend API Server is running!', 
+    message: 'PostgreSQL Backend API Server is running on Neon!', 
     status: 'OK',
     port: port,
     endpoints: {
@@ -1359,8 +1351,8 @@ app.post('/admin/audit-leave-counts', authenticateToken, async (req, res) => {
 // Test database connection
 app.get('/test-db', async (req, res) => {
   try {
-    const [result] = await query('SELECT COUNT(*) as count FROM users');
-    res.json({ success: true, userCount: result.count, message: 'Database connection successful' });
+    const result = await query('SELECT COUNT(*) as count FROM users');
+    res.json({ success: true, userCount: result.rows[0].count, message: 'Database connection successful' });
   } catch (error) {
     console.error('Database test failed:', error);
     res.status(500).json({ success: false, error: error.message });
